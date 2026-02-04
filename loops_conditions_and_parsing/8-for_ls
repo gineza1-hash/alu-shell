@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Displays filenames without the part before the first dash
-
 for file in *
 do
   if [[ "$file" == *-* ]]
