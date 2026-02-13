@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
-# Manages PID file and handles signals
+#script create thea file and stores it PID , displays messages depending on the signal it receives
+pgrep -f "$0" > /var/run/myscript.pid
+function catchSIGTERM(){
+	echo "I hate the kill command"
+	TEMPTWO="$(cat /var/run/myscript.pid)"
+	rm /var/run/myscript.pid
+	kill -9 "$TEMPTWO"
+}
 
-PIDFILE="/var/run/myscript.pid"
+function catchSIGINT(){
+	echo "Y U no love me?!"
+}
 
-echo $$ > "$PIDFILE"
-
-trap 'echo "I hate the kill command"' SIGTERM
-trap 'echo "Y U no love me?!"' SIGINT
-trap 'rm -f "$PIDFILE"; exit 0' SIGQUIT SIGTERM
+function catchSIGQUIT(){
+	TEMP="$(cat /var/run/myscript.pid)"
+	rm /var/run/myscript.pid
+	kill -9 "$TEMP"
+}
 
 while true
 do
-    echo "To infinity and beyond"
-    sleep 2
+	echo "To infinity and beyond"
+	trap catchSIGTERM SIGTERM
+	trap catchSIGINT  SIGINT
+	trap catchSIGQUIT SIGQUIT
 done
